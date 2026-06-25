@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 // ── ORIZ TRAVEL BRAND TOKENS ──────────────────────────────────
 const B = {
@@ -38,6 +39,7 @@ function Inp({ label, icon, value, onChange, type = "text", list }) {
     <div style={{ flex: 1, minWidth: 130 }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: B.textMid, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.6 }}>{icon} {label}</div>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} list={list}
+        suppressHydrationWarning={type === "date"}
         style={{ width: "100%", border: `1.5px solid ${B.border}`, borderRadius: 10, padding: "10px 12px", fontSize: 14, fontFamily: "Poppins, sans-serif", color: B.textDark, background: B.white, outline: "none" }} />
       {list && (
         <datalist id={list}>
@@ -52,9 +54,9 @@ function Sel({ label, icon, options, value, onChange }) {
   return (
     <div style={{ flex: 1, minWidth: 110 }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: B.textMid, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.6 }}>{icon} {label}</div>
-      <select value={value} onChange={e => onChange(e.target.value)}
+      <select value={String(value)} onChange={e => onChange(e.target.value)}
         style={{ width: "100%", border: `1.5px solid ${B.border}`, borderRadius: 10, padding: "10px 12px", fontSize: 14, fontFamily: "Poppins, sans-serif", color: B.textDark, background: B.white }}>
-        {options.map(o => <option key={o}>{o}</option>)}
+        {options.map(o => <option key={o} value={String(o)}>{o}</option>)}
       </select>
     </div>
   );
@@ -132,6 +134,9 @@ function HotelResults({ destination, checkIn, checkOut, rooms, nights }) {
 
 // ── BOOKING ENGINE ────────────────────────────────────────────
 function BookingEngine() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const [tab, setTab]           = useState("flights");
   const [searched, setSearched] = useState(false);
 
@@ -175,6 +180,12 @@ function BookingEngine() {
   function handleTabChange(id) {
     setTab(id);
     setSearched(false);
+  }
+
+  if (!mounted) {
+    return (
+      <div style={{ background: B.white, borderRadius: 20, boxShadow: "0 8px 48px rgba(110,70,200,0.13)", overflow: "hidden", border: `1px solid ${B.border}`, minHeight: 280 }} />
+    );
   }
 
   return (
@@ -294,13 +305,13 @@ export default function Page() {
             <img src="/Logo-N.png" alt="Oriz Travel" style={{ height: 44, width: "auto", objectFit: "contain" }} />
           </div>
           <div style={{ display: "flex", gap: 28, flex: 1 }}>
-            {["Flights", "Hotels", "Cars", "B2B Portal"].map(l => (
+            {["Flights", "Hotels", "Cars"].map(l => (
               <a key={l} href="#" style={{ fontSize: 13, color: B.textMid, textDecoration: "none", fontWeight: 500 }}>{l}</a>
             ))}
           </div>
           <div style={{ display: "flex", gap: 10 }}>
-            <button style={{ background: "transparent", border: `1.5px solid ${B.border}`, borderRadius: 10, padding: "8px 18px", color: B.navy, fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>Sign In</button>
-            <button style={{ background: `linear-gradient(135deg, ${B.purple}, ${B.navyMid})`, border: "none", borderRadius: 10, padding: "8px 18px", color: B.white, fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Get Started</button>
+            <Link href="/login" style={{ background: "transparent", border: `1.5px solid ${B.border}`, borderRadius: 10, padding: "8px 18px", color: B.navy, fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Sign In</Link>
+            <Link href="/login" style={{ background: `linear-gradient(135deg, ${B.purple}, ${B.navyMid})`, border: "none", borderRadius: 10, padding: "8px 18px", color: B.white, fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Get Started</Link>
           </div>
         </div>
       </nav>
@@ -518,7 +529,7 @@ export default function Page() {
               </p>
             </div>
             {[
-              {title:"Product", links:["Flights","Hotels","Cars","Tours","B2B Portal"]},
+              {title:"Product", links:["Flights","Hotels","Cars","Tours"]},
               {title:"Company", links:["About Us","Blog","Careers","Press","Contact"]},
               {title:"Support", links:["Help Center","API Docs","Status","Privacy Policy","Terms"]},
             ].map((col, i) => (
