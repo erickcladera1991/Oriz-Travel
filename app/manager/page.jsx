@@ -236,9 +236,8 @@ function Sidebar({screen,setScreen}){
             <div style={{fontSize:10,color:B.textLight}}>Manager · {GROUP.plan} Plan</div>
           </div>
         </div>
-        <button
-          onClick={async () => { await supabase.auth.signOut(); router.replace("/login"); }}
-          style={{ width:"100%", background:"transparent", border:`1px solid ${B.border}`, borderRadius:8, padding:"6px 10px", color:B.textMid, fontSize:11, fontWeight:600, cursor:"pointer" }}>
+        <button onClick={async()=>{await supabase.auth.signOut();router.replace("/login");}}
+          style={{width:"100%",background:"transparent",border:`1px solid ${B.border}`,borderRadius:8,padding:"6px 10px",color:B.textMid,fontSize:11,cursor:"pointer",fontWeight:600}}>
           Sign out
         </button>
       </div>
